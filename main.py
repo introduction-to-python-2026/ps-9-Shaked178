@@ -20,10 +20,10 @@ model.fit(X_train, y_train)
 
 joblib.dump(model, cfg["model_path"])
 
+# חישוב דיוק על סט הבדיקה בלבד
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy:", accuracy)
+print("Accuracy on test set:", accuracy)
 
+# אופציונלי: תחזיות על כל הנתונים
 df["predicted_status"] = model.predict(X)
-print(df.head())
-
