@@ -1,2 +1,2 @@
 path: "my_model.joblib"
-features = ['PPE' , 'spread1' , 'MDVP:Fo(Hz)' ]
+features = ['PPE' , 'spread1' ]
