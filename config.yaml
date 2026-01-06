@@ -1,3 +1,6 @@
-model_path = "model.joblib"
-target = "status"
-features = ['PPE', 'spread1', 'MDVP:Fo(Hz)']
+model_path: "model.joblib"
+target: "status"
+features:
+  - "PPE"
+  - "spread1"
+  - "MDVP:Fo(Hz)"
