@@ -2,6 +2,7 @@ import yaml
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
 import joblib
 
 with open("config.yaml") as f:
@@ -19,8 +20,10 @@ model.fit(X_train, y_train)
 
 joblib.dump(model, cfg["model_path"])
 
-preds = model.predict(X)
-df["predicted_status"] = preds
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
 
+df["predicted_status"] = model.predict(X)
 print(df.head())
 
