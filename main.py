@@ -1,25 +1,26 @@
+import yaml
 import pandas as pd
-import joblib
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+import joblib
 
-data = pd.read_csv('parkinsons.csv')
+with open("config.yaml") as f:
+    cfg = yaml.safe_load(f)
 
-X = data[['PPE', 'spread1', 'MDVP:Fo(Hz)']]
-y = data['status']
+df = pd.read_csv(cfg["data"])
 
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=100)
+X = df[cfg["features"]]
+y = df[cfg["target"]]
 
-scaler = MinMaxScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_val_scaled = scaler.transform(X_val)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-model = KNeighborsClassifier(n_neighbors=3)
-model.fit(X_train_scaled, y_train)
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train)
 
-accuracy = model.score(X_val_scaled, y_val)
-print(accuracy)
+joblib.dump(model, cfg["model_path"])
 
-joblib.dump(model, 'model.joblib')
-joblib.dump(scaler, 'scaler.joblib')
+preds = model.predict(X)
+df["predicted_status"] = preds
+
+print(df.head())
+
