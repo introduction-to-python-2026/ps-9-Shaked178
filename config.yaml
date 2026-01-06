@@ -1,2 +1,5 @@
-path: "my_model.joblib"
-features = ['PPE' , 'spread1']
+model_path: "model.joblib"
+target: "status"
+features:
+  - "PPE"
+  - "spread1"
