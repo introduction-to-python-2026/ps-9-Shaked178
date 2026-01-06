@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 
 data = pd.read_csv('parkinsons.csv')
 
-X = data.drop(['status', 'name'], axis=1)
+X = data.drop(['status', 'name'], axis=1, errors='ignore')
 y = data['status']
 
 scaler = StandardScaler()
