@@ -9,7 +9,6 @@ with open("config.yaml") as f:
     cfg = yaml.safe_load(f)
 
 df = pd.read_csv(cfg["data"])
-
 X = df[cfg["features"]]
 y = df[cfg["target"]]
 
@@ -17,13 +16,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 model = DecisionTreeClassifier()
 model.fit(X_train, y_train)
-
 joblib.dump(model, cfg["model_path"])
 
-# חישוב דיוק על סט הבדיקה בלבד
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy on test set:", accuracy)
+y_pred_test = model.predict(X_test)
+print("Accuracy on test set:", accuracy_score(y_test, y_pred_test))
 
-# אופציונלי: תחזיות על כל הנתונים
-df["predicted_status"] = model.predict(X)
+try:
+    new_df = pd.read_csv("new_data.csv")
+    X_new = new_df[cfg["features"]]
+    new_df["predicted_status"] = model.predict(X_new)
+    new_df.to_csv("new_data_predictions.csv", index=False)
+    print("Predictions saved to new_data_predictions.csv")
+except FileNotFoundError:
+    pass
