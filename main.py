@@ -6,7 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 data = pd.read_csv('parkinsons.csv')
 
-X = data[['PPE', 'spread1', 'MDVP:Fo(Hz)']]
+X = data[['PPE', 'spread1']]
 y = data['status']
 
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=100)
