@@ -1,8 +1,8 @@
 model_path: "model.joblib"
+data: "parkinsons.csv"
 target: "status"
 features:
   - "PPE"
   - "spread1"
   - "MDVP:Fo(Hz)"
-data: "parkinsons.csv"
 
