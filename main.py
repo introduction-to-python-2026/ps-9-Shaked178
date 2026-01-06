@@ -1,25 +1,44 @@
 import pandas as pd
 import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
 
 data = pd.read_csv('parkinsons.csv')
 
-X = data[['PPE', 'spread1', 'MDVP:Fo(Hz)']]
+X = data.drop(['status', 'name'], axis=1, errors='ignore')
 y = data['status']
 
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
 
-scaler = MinMaxScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_val_scaled = scaler.transform(X_val)
-
-model = KNeighborsClassifier(n_neighbors=3)
-model.fit(X_train_scaled, y_train)
-
-accuracy = model.score(X_val_scaled, y_val)
-print(accuracy)
+model = RandomForestClassifier(random_state=42)
+model.fit(X_scaled, y)
 
 joblib.dump(model, 'model.joblib')
 joblib.dump(scaler, 'scaler.joblib')
+
+print("Done")
+
+
+model_path = "model.joblib"
+target = "status"
+features = ['PPE', 'spread1']
+
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+data[features] = scaler.fit_transform(data[features])
+
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=100)
+
+from sklearn.neighbors import KNeighborsClassifier
+
+model = KNeighborsClassifier(n_neighbors=5)
+
+
+model.fit(X_train, y_train)
+accuracy = model.score(X_val , y_val)
+print(f"Accuracy: {accuracy}")
