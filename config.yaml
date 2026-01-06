@@ -1,4 +1,4 @@
-model_path: "model.joblib"
+model_path: "my_model.joblib"
 target: "status"
 features:
   - "PPE"
