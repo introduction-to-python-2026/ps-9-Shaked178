@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 import joblib
@@ -31,25 +31,33 @@ print(X_scaled.head())
 X_train, X_val, y_train, y_val = train_test_split(
     X_scaled, y, test_size=0.2, random_state=42
 )
-
 print("Train shape:", X_train.shape)
 print("Validation shape:", X_val.shape)
 
-# 5. Choose a model
-model = SVC(kernel='rbf', C=167, gamma=300)  # הערכים שלך, אם רציתם לשפר דיוק
+# 5. Choose a model with GridSearchCV to optimize parameters
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': ['scale', 0.01, 0.1, 1],
+    'kernel': ['rbf']
+}
+
+grid = GridSearchCV(SVC(), param_grid, cv=5)
+grid.fit(X_train, y_train)
+
+# Best model from GridSearch
+model = grid.best_estimator_
 print("Selected model:", model)
+print("Best parameters:", grid.best_params_)
 
-# 6. Train and test the model
-model.fit(X_train, y_train)
+# 6. Test the accuracy
 y_pred = model.predict(X_val)
-
 accuracy = accuracy_score(y_val, y_pred)
 print("Validation Accuracy:", accuracy)
 
 if accuracy >= 0.8:
     print("✅ Accuracy requirement met!")
 else:
-    print("⚠ Accuracy below 0.8, consider tuning the model.")
+    print("⚠ Accuracy below 0.8, consider reviewing features or parameters.")
 
 # 7. Save the model and update config.yaml
 model_filename = "my_model.joblib"
@@ -64,4 +72,3 @@ with open("config.yaml", "w") as file:
     yaml.dump(config, file)
 
 print("Model saved and config.yaml updated!")
-
