@@ -1,7 +1,2 @@
-model_path: "model.joblib"
-data: "parkinsons.csv"
-target: "status"
-features:
-  - "PPE"
-  - "spread1"
-  - "MDVP:Fo(Hz)"
+selected_features: ["MDVP:Fo(Hz)", "MDVP:Fhi(Hz)"] 
+path: "my_model.joblib"  
