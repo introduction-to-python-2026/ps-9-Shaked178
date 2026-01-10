@@ -1,31 +1,71 @@
-import yaml
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
+
+df = pd.read_csv("parkinsons.csv")
+
+X = df[["MDVP:Fo(Hz)", "MDVP:Fhi(Hz)"]]
+y = df["status"]
+
+print("X sample:")
+print(X.head())
+
+print("\nY sample:")
+print(y.head())
+
+
+
+df = pd.read_csv("parkinsons.csv")
+
+X = df[["MDVP:Fo(Hz)", "MDVP:Fhi(Hz)"]]
+
+=scaler = MinMaxScaler()
+
 import joblib
 
-with open("config.yaml") as f:
-    cfg = yaml.safe_load(f)
+joblib.dump(model, 'my_model.joblib')
 
-df = pd.read_csv(cfg["data"])
-X = df[cfg["features"]]
-y = df[cfg["target"]]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_scaled = scaler.fit_transform(X)
 
-model = DecisionTreeClassifier()
+
+X_scaled = pd.DataFrame(X_scaled, columns=["MDVP:Fo(Hz)", "MDVP:Fhi(Hz)"])
+
+print("After scaling:")
+print(X_scaled.head())
+
+
+
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X_scaled, 
+    y, 
+    test_size=0.2,   
+    random_state=42  
+)
+
+print("Train shape:", X_train.shape)
+print("Validation shape:", X_val.shape)
+
+
+
+
+model = SVC(kernel='rbf', C=1, gamma='scale')
+
+print("Selected model:", model)
+
+
+model = SVC(kernel='rbf', C=167, gamma=300)
+
+
 model.fit(X_train, y_train)
-joblib.dump(model, cfg["model_path"])
 
-y_pred_test = model.predict(X_test)
-print("Accuracy on test set:", accuracy_score(y_test, y_pred_test))
 
-try:
-    new_df = pd.read_csv("new_data.csv")
-    X_new = new_df[cfg["features"]]
-    new_df["predicted_status"] = model.predict(X_new)
-    new_df.to_csv("new_data_predictions.csv", index=False)
-    print("Predictions saved to new_data_predictions.csv")
-except FileNotFoundError:
-    pass
+y_pred = model.predict(X_val)
+
+
+accuracy = accuracy_score(y_val, y_pred)
+print("Validation Accuracy:", accuracy)
+
